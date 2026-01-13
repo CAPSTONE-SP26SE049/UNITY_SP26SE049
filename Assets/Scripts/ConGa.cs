@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class Goomba : MonoBehaviour
+public class ConGa : MonoBehaviour
 {
     public Sprite flatSprite;
 
     private void Awake()
     {
-        // Ignore collision với các enemy khác (Goomba, Trau, ConGa)
+        // Ignore collision với các enemy khác (Goomba, Trau, ConGa khác)
         IgnoreEnemyCollisions();
     }
 
@@ -27,7 +27,7 @@ public class Goomba : MonoBehaviour
         ConGa[] conGas = FindObjectsOfType<ConGa>();
         Doc[] docs = FindObjectsOfType<Doc>();
 
-        // Ignore collision với Goomba khác
+        // Ignore collision với Goomba
         foreach (Goomba goomba in goombas)
         {
             if (goomba != null && goomba.gameObject != gameObject)
@@ -53,7 +53,7 @@ public class Goomba : MonoBehaviour
             }
         }
 
-        // Ignore collision với ConGa
+        // Ignore collision với ConGa khác
         foreach (ConGa conGa in conGas)
         {
             if (conGa != null && conGa.gameObject != gameObject)
@@ -134,15 +134,15 @@ public class Goomba : MonoBehaviour
     {
         GetComponent<Collider2D>().enabled = false;
         GetComponent<EntityMovement>().enabled = false;
-        GetComponent<AnimatedSprite>().enabled = false;
+        GetComponent<ConGaAnimatedSprite>().enabled = false;
         GetComponent<SpriteRenderer>().sprite = flatSprite;
         Destroy(gameObject, 0.5f);
     }
 
     private void Hit()
     {
-        GetComponent<AnimatedSprite>().enabled = false;
-        GetComponent<DeathAnimation>().enabled = true;
+        GetComponent<ConGaAnimatedSprite>().enabled = false;
+        GetComponent<ConGaDeathAnimation>().enabled = true;
         Destroy(gameObject, 3f);
     }
 

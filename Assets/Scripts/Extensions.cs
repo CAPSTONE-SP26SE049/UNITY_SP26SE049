@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class Extensions
 {
-    private static LayerMask layerMask = LayerMask.GetMask("Default");
+    private static LayerMask layerMask = LayerMask.GetMask("Default", "Road");
 
     // Checks if the rigidbody is colliding with an object in a given direction.
     // For example, if you want to check if the player is touching the ground,
@@ -14,13 +14,53 @@ public static class Extensions
             return false;
         }
 
-        Vector2 edge = rigidbody.ClosestPoint(rigidbody.position + direction);
-        float radius = (edge - rigidbody.position).magnitude / 2f;
-        float distance = radius + 0.125f;
+        // Lấy collider để tính toán chính xác hơn (hỗ trợ collider có offset)
+        Collider2D collider = rigidbody.GetComponent<Collider2D>();
+        if (collider == null) {
+            return false;
+        }
 
-        Vector2 point = rigidbody.position + (direction.normalized * distance);
-        Collider2D collider = Physics2D.OverlapCircle(point, radius, layerMask);
-        return collider != null && collider.attachedRigidbody != rigidbody;
+        // Sử dụng bounds của collider thay vì rigidbody position để chính xác hơn
+        Bounds bounds = collider.bounds;
+        
+        // Tính toán vị trí edge dựa trên bounds
+        Vector2 center = bounds.center;
+        Vector2 size = bounds.size;
+        
+        // Tính toán điểm kiểm tra dựa trên hướng
+        Vector2 checkPoint;
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y)) {
+            // Kiểm tra theo hướng ngang (trái/phải)
+            float offsetX = (direction.x > 0 ? 1 : -1) * (size.x / 2f + 0.1f);
+            checkPoint = center + new Vector2(offsetX, 0);
+        } else {
+            // Kiểm tra theo hướng dọc (lên/xuống)
+            float offsetY = (direction.y > 0 ? 1 : -1) * (size.y / 2f + 0.1f);
+            checkPoint = center + new Vector2(0, offsetY);
+        }
+
+        // Kiểm tra xem có collider nào ở vị trí đó không
+        Collider2D hitCollider = Physics2D.OverlapCircle(checkPoint, 0.1f, layerMask);
+        
+        // Nếu không có collider, return false
+        if (hitCollider == null || hitCollider.attachedRigidbody == rigidbody) {
+            return false;
+        }
+
+        // Kiểm tra xem collider có phải là enemy khác không (Goomba, Trau, ConGa, Doc)
+        // Nếu là enemy khác, không coi là wall (vì đã ignore collision)
+        GameObject hitObject = hitCollider.gameObject;
+        if (hitObject.TryGetComponent<Goomba>(out _) ||
+            hitObject.TryGetComponent<Trau>(out _) ||
+            hitObject.TryGetComponent<ConGa>(out _) ||
+            hitObject.TryGetComponent<Doc>(out _))
+        {
+            // Đây là enemy khác, không phải wall
+            return false;
+        }
+
+        // Đây là wall thực sự (platform, block, etc.)
+        return true;
     }
 
     // Checks if the transform is facing another transform in a given direction.

@@ -46,7 +46,8 @@ public class EntityMovement : MonoBehaviour
         velocity.x = direction.x * speed;
         velocity.y += Physics2D.gravity.y * Time.fixedDeltaTime;
 
-        rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
+        Vector2 newPosition = rb.position + velocity * Time.fixedDeltaTime;
+        rb.MovePosition(newPosition);
 
         // Reset y-velocity while grounded to prevent infinite build up of gravity
         if (rb.Raycast(Vector2.down)) {
@@ -54,6 +55,7 @@ public class EntityMovement : MonoBehaviour
         }
 
         // Flip movement direction after hitting a wall
+        // Kiểm tra xem có vật cản phía trước không và quay đầu
         if (rb.Raycast(direction)) {
             direction = -direction;
         }

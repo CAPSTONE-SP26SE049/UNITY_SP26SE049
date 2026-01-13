@@ -1,32 +1,20 @@
 using System.Collections;
 using UnityEngine;
 
-public class DeathAnimation : MonoBehaviour
+public class ConGaDeathAnimation : MonoBehaviour
 {
-    public SpriteRenderer spriteRenderer; // Có thể gán từ Inspector hoặc tự động tìm
+    public SpriteRenderer spriteRenderer;
     public Sprite deadSprite;
 
     private void Reset()
     {
-        // Tự động tìm SpriteRenderer trên chính GameObject này hoặc child
         spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer == null)
-        {
-            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        }
     }
 
     private void Awake()
     {
-        // Nếu chưa được gán, tự động tìm
-        if (spriteRenderer == null)
-        {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer == null)
-            {
-                spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            }
-        }
+        // Tự động disable component khi bắt đầu để tránh chạy animation ngay lập tức
+        enabled = false;
     }
 
     private void OnEnable()
@@ -43,6 +31,11 @@ public class DeathAnimation : MonoBehaviour
 
     private void UpdateSprite()
     {
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
         spriteRenderer.enabled = true;
         spriteRenderer.sortingOrder = 10;
 
@@ -60,6 +53,7 @@ public class DeathAnimation : MonoBehaviour
         }
 
         if (TryGetComponent(out Rigidbody2D rigidbody)) {
+            rigidbody.velocity = Vector2.zero;
             rigidbody.isKinematic = true;
         }
 
@@ -67,12 +61,13 @@ public class DeathAnimation : MonoBehaviour
             playerMovement.enabled = false;
         }
 
-        if (TryGetComponent(out MainCharMovement mainCharMovement)) {
-            mainCharMovement.enabled = false;
-        }
-
         if (TryGetComponent(out EntityMovement entityMovement)) {
             entityMovement.enabled = false;
+        }
+
+        // Tắt ConGaAnimatedSprite khi chết
+        if (TryGetComponent(out ConGaAnimatedSprite conGaAnimation)) {
+            conGaAnimation.enabled = false;
         }
     }
 
