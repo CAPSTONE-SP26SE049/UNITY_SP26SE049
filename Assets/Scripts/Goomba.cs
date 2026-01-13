@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(50)] // Chạy sau QuestionObstacle
 public class Goomba : MonoBehaviour
 {
     public Sprite flatSprite;
@@ -8,6 +9,13 @@ public class Goomba : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player") && collision.gameObject.TryGetComponent(out Player player))
         {
+            // Kiểm tra xem có QuestionObstacle không - nếu có thì không gây damage
+            QuestionObstacle questionObstacle = GetComponent<QuestionObstacle>();
+            if (questionObstacle != null && questionObstacle.isActive)
+            {
+                return; // Có QuestionObstacle, không xử lý collision ở đây
+            }
+
             if (player.starpower) {
                 Hit();
             } else if (collision.transform.DotTest(transform, Vector2.down)) {

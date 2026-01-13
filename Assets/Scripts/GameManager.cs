@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     public int lives { get; private set; } = 3;
     public int coins { get; private set; } = 0;
 
+    [Header("Health Bar")]
+    private AutoHealthBar autoHealthBar;
+
     private void Awake()
     {
         if (Instance != null) {
@@ -18,6 +21,15 @@ public class GameManager : MonoBehaviour
         } else {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            // Tự động tạo Health Bar
+            autoHealthBar = GetComponent<AutoHealthBar>();
+            if (autoHealthBar == null)
+            {
+                autoHealthBar = gameObject.AddComponent<AutoHealthBar>();
+                autoHealthBar.maxHealth = 100;
+                autoHealthBar.currentHealth = 100;
+            }
         }
     }
 
