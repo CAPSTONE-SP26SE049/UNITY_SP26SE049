@@ -13,11 +13,12 @@ public class Koopa : MonoBehaviour
     {
         if (!shelled && collision.gameObject.CompareTag("Player") && collision.gameObject.TryGetComponent(out Player player))
         {
-            // Kiểm tra xem có QuestionObstacle không - nếu có thì không gây damage
-            QuestionObstacle questionObstacle = GetComponent<QuestionObstacle>();
-            if (questionObstacle != null && questionObstacle.isActive)
+            // Kiểm tra xem có bất kỳ obstacle câu hỏi nào không - nếu có thì không gây damage
+            if (GetComponent<QuestionObstacle>() != null ||
+                GetComponent<WritingQuestionObstacle>() != null ||
+                GetComponent<ListeningQuestionObstacle>() != null)
             {
-                return; // Có QuestionObstacle, không xử lý collision ở đây
+                return; // Đây là enemy dùng cho câu hỏi, không xử lý damage
             }
 
             if (player.starpower) {
@@ -34,11 +35,12 @@ public class Koopa : MonoBehaviour
     {
         if (shelled && other.CompareTag("Player") && other.TryGetComponent(out Player player))
         {
-            // Kiểm tra xem có QuestionObstacle không
-            QuestionObstacle questionObstacle = GetComponent<QuestionObstacle>();
-            if (questionObstacle != null && questionObstacle.isActive)
+            // Kiểm tra xem có obstacle câu hỏi không - nếu có thì không gây damage
+            if (GetComponent<QuestionObstacle>() != null ||
+                GetComponent<WritingQuestionObstacle>() != null ||
+                GetComponent<ListeningQuestionObstacle>() != null)
             {
-                return; // Có QuestionObstacle, không xử lý trigger ở đây
+                return;
             }
 
             if (!pushed)

@@ -82,7 +82,7 @@ public class WritingQuestionUI : MonoBehaviour
 
     private void CreateWritingUI(Transform parent)
     {
-        // Tạo panel chính
+        // PANEL chính
         GameObject panelObj = new GameObject("WritingQuestionPanel");
         panelObj.transform.SetParent(parent, false);
         questionPanel = panelObj;
@@ -99,19 +99,50 @@ public class WritingQuestionUI : MonoBehaviour
         // === BOX CÂU HỎI BÊN TRÁI ===
         GameObject questionBoxObj = new GameObject("QuestionBox");
         questionBoxObj.transform.SetParent(panelObj.transform, false);
-        
+
         Image questionBoxImage = questionBoxObj.AddComponent<Image>();
-        questionBoxImage.color = Color.white;
-        
+        // Dùng background giống QuestionUI
+        Sprite bgQuestion = Resources.Load<Sprite>("UI/backgroundquestion");
+        if (bgQuestion != null)
+        {
+            questionBoxImage.sprite = bgQuestion;
+            questionBoxImage.type = Image.Type.Sliced;
+            questionBoxImage.color = Color.white;
+        }
+        else
+        {
+            // Nếu không có sprite thì để trong suốt (xóa nền trắng cũ)
+            questionBoxImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
         RectTransform questionBoxRect = questionBoxObj.GetComponent<RectTransform>();
-        questionBoxRect.anchorMin = new Vector2(0, 0);
-        questionBoxRect.anchorMax = new Vector2(0.5f, 0.4f);
+        questionBoxRect.anchorMin = new Vector2(0f, 0f);
+        questionBoxRect.anchorMax = new Vector2(0.5f, 0.35f);
         questionBoxRect.sizeDelta = Vector2.zero;
         questionBoxRect.anchoredPosition = Vector2.zero;
-        questionBoxRect.offsetMin = new Vector2(10, 10);
-        questionBoxRect.offsetMax = new Vector2(-5, -10);
+        questionBoxRect.offsetMin = new Vector2(12, 12);
+        questionBoxRect.offsetMax = new Vector2(-6, -12);
 
-        CreatePixelBorder(questionBoxObj.transform, 3);
+        // Không tạo viền đen nữa để nhìn giống khung gỗ gốc
+
+        // Header nhỏ
+        GameObject headerObj = new GameObject("Header");
+        headerObj.transform.SetParent(questionBoxObj.transform, false);
+        Text headerText = headerObj.AddComponent<Text>();
+        headerText.text = "HÃY ĐIỀN ĐÁP ÁN VÀO CHỖ TRỐNG";
+        headerText.font = pixelFont;
+        headerText.fontSize = 24;
+        headerText.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+        headerText.alignment = TextAnchor.UpperLeft;
+        headerText.raycastTarget = false;
+
+        RectTransform headerRect = headerObj.GetComponent<RectTransform>();
+        headerRect.anchorMin = new Vector2(0f, 0.75f);
+        headerRect.anchorMax = new Vector2(1f, 1f);
+        headerRect.sizeDelta = Vector2.zero;
+        headerRect.anchoredPosition = Vector2.zero;
+        headerRect.offsetMin = new Vector2(16, 8);
+        headerRect.offsetMax = new Vector2(-16, -4);
 
         // Text câu hỏi
         GameObject questionObj = new GameObject("QuestionText");
@@ -119,126 +150,140 @@ public class WritingQuestionUI : MonoBehaviour
         questionText = questionObj.AddComponent<Text>();
         questionText.text = "Câu hỏi";
         questionText.font = pixelFont;
+        // Đồng bộ style với QuestionUI
         questionText.fontSize = 32;
         questionText.color = Color.black;
-        questionText.alignment = TextAnchor.UpperLeft;
+        // Căn giữa trong khung gỗ
+        questionText.alignment = TextAnchor.MiddleCenter;
         questionText.raycastTarget = false;
 
         RectTransform questionRect = questionObj.GetComponent<RectTransform>();
-        questionRect.anchorMin = new Vector2(0, 0);
-        questionRect.anchorMax = new Vector2(1, 1);
+        // Chiếm gần hết phần trong của background, chừa viền gỗ xung quanh
+        questionRect.anchorMin = new Vector2(0.08f, 0.2f);
+        questionRect.anchorMax = new Vector2(0.92f, 0.8f);
         questionRect.sizeDelta = Vector2.zero;
         questionRect.anchoredPosition = Vector2.zero;
-        questionRect.offsetMin = new Vector2(15, 15);
-        questionRect.offsetMax = new Vector2(-15, -15);
+        questionRect.offsetMin = Vector2.zero;
+        questionRect.offsetMax = Vector2.zero;
 
         // === BOX NHẬP ĐÁP ÁN BÊN PHẢI ===
         GameObject answerBoxObj = new GameObject("AnswerBox");
         answerBoxObj.transform.SetParent(panelObj.transform, false);
-        
+
         Image answerBoxImage = answerBoxObj.AddComponent<Image>();
-        answerBoxImage.color = Color.white;
-        
+        // Dùng background giống AnswerBox trong QuestionUI
+        Sprite bgAnswer = Resources.Load<Sprite>("UI/backgroundanswer");
+        if (bgAnswer != null)
+        {
+            answerBoxImage.sprite = bgAnswer;
+            answerBoxImage.type = Image.Type.Sliced;
+            answerBoxImage.color = Color.white;
+        }
+        else
+        {
+            answerBoxImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
         RectTransform answerBoxRect = answerBoxObj.GetComponent<RectTransform>();
-        answerBoxRect.anchorMin = new Vector2(0.5f, 0);
-        answerBoxRect.anchorMax = new Vector2(1, 0.4f);
+        answerBoxRect.anchorMin = new Vector2(0.5f, 0f);
+        answerBoxRect.anchorMax = new Vector2(1f, 0.35f);
         answerBoxRect.sizeDelta = Vector2.zero;
         answerBoxRect.anchoredPosition = Vector2.zero;
-        answerBoxRect.offsetMin = new Vector2(5, 10);
-        answerBoxRect.offsetMax = new Vector2(-10, -10);
+        answerBoxRect.offsetMin = new Vector2(6, 12);
+        answerBoxRect.offsetMax = new Vector2(-12, -12);
 
-        CreatePixelBorder(answerBoxObj.transform, 3);
+        // Không tạo viền pixel đen cho AnswerBox nữa
 
-        // Input Field
+        // Ô nhập đáp án (phía trên)
         GameObject inputObj = new GameObject("AnswerInputField");
         inputObj.transform.SetParent(answerBoxObj.transform, false);
-        
+
         Image inputBg = inputObj.AddComponent<Image>();
         inputBg.color = Color.white;
-        
+
         RectTransform inputRect = inputObj.GetComponent<RectTransform>();
-        inputRect.anchorMin = new Vector2(0.1f, 0.6f);
-        inputRect.anchorMax = new Vector2(0.9f, 0.9f);
+        inputRect.anchorMin = new Vector2(0.08f, 0.55f);
+        inputRect.anchorMax = new Vector2(0.92f, 0.95f);
         inputRect.sizeDelta = Vector2.zero;
         inputRect.anchoredPosition = Vector2.zero;
 
-        CreatePixelBorder(inputObj.transform, 2);
+        // Xóa viền pixel của InputField
+        // CreatePixelBorder(inputObj.transform, 2);
 
         answerInputField = inputObj.AddComponent<InputField>();
         answerInputField.targetGraphic = inputBg;
         answerInputField.characterLimit = 20;
-        
-        // Text component cho input
+
         GameObject textObj = new GameObject("Text");
         textObj.transform.SetParent(inputObj.transform, false);
         Text textComponent = textObj.AddComponent<Text>();
         textComponent.font = pixelFont;
-        textComponent.fontSize = 28;
+        textComponent.fontSize = 40;
         textComponent.color = Color.black;
         textComponent.alignment = TextAnchor.MiddleLeft;
-        
+
         RectTransform textRect = textObj.GetComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
         textRect.sizeDelta = Vector2.zero;
         textRect.anchoredPosition = Vector2.zero;
-        textRect.offsetMin = new Vector2(10, 5);
-        textRect.offsetMax = new Vector2(-10, -5);
-        
+        textRect.offsetMin = new Vector2(12, 6);
+        textRect.offsetMax = new Vector2(-12, -6);
+
         answerInputField.textComponent = textComponent;
-        
-        // Placeholder text
+
+        // Placeholder
         GameObject placeholderObj = new GameObject("Placeholder");
         placeholderObj.transform.SetParent(inputObj.transform, false);
         Text placeholderText = placeholderObj.AddComponent<Text>();
         placeholderText.text = "Nhập đáp án...";
         placeholderText.font = pixelFont;
-        placeholderText.fontSize = 28;
+        placeholderText.fontSize = 32;
         placeholderText.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         placeholderText.alignment = TextAnchor.MiddleLeft;
-        
+
         RectTransform placeholderRect = placeholderObj.GetComponent<RectTransform>();
         placeholderRect.anchorMin = Vector2.zero;
         placeholderRect.anchorMax = Vector2.one;
         placeholderRect.sizeDelta = Vector2.zero;
         placeholderRect.anchoredPosition = Vector2.zero;
-        placeholderRect.offsetMin = new Vector2(10, 5);
-        placeholderRect.offsetMax = new Vector2(-10, -5);
-        
+        placeholderRect.offsetMin = new Vector2(12, 6);
+        placeholderRect.offsetMax = new Vector2(-12, -6);
+
         answerInputField.placeholder = placeholderText;
 
-        // Submit Button
+        // Nút Nộp bài (phía dưới)
         GameObject submitBtnObj = new GameObject("SubmitButton");
         submitBtnObj.transform.SetParent(answerBoxObj.transform, false);
-        
+
         Image submitBtnImage = submitBtnObj.AddComponent<Image>();
-        submitBtnImage.color = Color.white;
+        // Xóa nền trắng nút, dùng nền trong suốt với hiệu ứng hover nhẹ
+        submitBtnImage.color = new Color(1f, 1f, 1f, 0f);
         submitBtnImage.raycastTarget = true;
-        
+
         submitButton = submitBtnObj.AddComponent<Button>();
         submitButton.interactable = true;
-        
+
         ColorBlock submitColors = submitButton.colors;
-        submitColors.normalColor = Color.white;
-        submitColors.highlightedColor = new Color(0.95f, 0.95f, 0.95f, 1f);
-        submitColors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
+        submitColors.normalColor = new Color(1f, 1f, 1f, 0f);
+        submitColors.highlightedColor = new Color(1f, 1f, 1f, 0.12f);
+        submitColors.pressedColor = new Color(1f, 1f, 1f, 0.2f);
         submitButton.colors = submitColors;
-        
-        CreatePixelBorder(submitBtnObj.transform, 2);
+
+        // Không cần viền pixel đen quanh nút
 
         RectTransform submitBtnRect = submitBtnObj.GetComponent<RectTransform>();
-        submitBtnRect.anchorMin = new Vector2(0.2f, 0.1f);
-        submitBtnRect.anchorMax = new Vector2(0.8f, 0.5f);
+        submitBtnRect.anchorMin = new Vector2(0.25f, 0.08f);
+        submitBtnRect.anchorMax = new Vector2(0.75f, 0.45f);
         submitBtnRect.sizeDelta = Vector2.zero;
         submitBtnRect.anchoredPosition = Vector2.zero;
 
-        // Text cho button (tạo child)
         GameObject submitTextObj = new GameObject("Text");
         submitTextObj.transform.SetParent(submitBtnObj.transform, false);
         submitButtonText = submitTextObj.AddComponent<Text>();
         submitButtonText.text = "Nộp bài";
         submitButtonText.font = pixelFont;
-        submitButtonText.fontSize = 28;
+        submitButtonText.fontSize = 32;
         submitButtonText.color = Color.black;
         submitButtonText.alignment = TextAnchor.MiddleCenter;
         submitButtonText.raycastTarget = false;

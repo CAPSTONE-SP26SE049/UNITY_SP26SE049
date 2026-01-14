@@ -82,13 +82,13 @@ public class QuestionUI : MonoBehaviour
 
     private void CreateQuestionUI(Transform parent)
     {
-        // Tạo panel chính (nền trong suốt)
+        // PANEL CHÍNH (trong suốt, full màn)
         GameObject panelObj = new GameObject("QuestionPanel");
         panelObj.transform.SetParent(parent, false);
         questionPanel = panelObj;
 
         Image panelImage = panelObj.AddComponent<Image>();
-        panelImage.color = new Color(0, 0, 0, 0); // Trong suốt
+        panelImage.color = new Color(0, 0, 0, 0); // trong suốt
 
         RectTransform panelRect = panelObj.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0, 0);
@@ -96,23 +96,55 @@ public class QuestionUI : MonoBehaviour
         panelRect.sizeDelta = Vector2.zero;
         panelRect.anchoredPosition = Vector2.zero;
 
-        // === BOX CÂU HỎI BÊN TRÁI (nền trắng, viền đen pixel) ===
+        // === BOX CÂU HỎI BÊN TRÁI ===
         GameObject questionBoxObj = new GameObject("QuestionBox");
         questionBoxObj.transform.SetParent(panelObj.transform, false);
-        
+
         Image questionBoxImage = questionBoxObj.AddComponent<Image>();
-        questionBoxImage.color = Color.white; // Nền trắng
-        
+        // Load sprite background từ Resources
+        Sprite bgSprite = Resources.Load<Sprite>("UI/backgroundquestion");
+        if (bgSprite != null)
+        {
+            questionBoxImage.sprite = bgSprite;
+            questionBoxImage.type = Image.Type.Sliced; // Dùng Sliced để giữ tỷ lệ khi scale
+            questionBoxImage.color = Color.white; // Màu trắng để sprite hiển thị đúng
+        }
+        else
+        {
+            // Nếu không tìm thấy sprite, giữ trong suốt
+            questionBoxImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
         RectTransform questionBoxRect = questionBoxObj.GetComponent<RectTransform>();
-        questionBoxRect.anchorMin = new Vector2(0, 0);
-        questionBoxRect.anchorMax = new Vector2(0.5f, 0.4f); // Chiếm phần dưới bên trái
+        // Căn đều với AnswerBox, dịch cụm UI xuống dưới và cho QuestionBox to vừa chạm AnswerBox (không đè lên)
+        questionBoxRect.anchorMin = new Vector2(0.03f, 0.02f);
+        questionBoxRect.anchorMax = new Vector2(0.495f, 0.42f);
         questionBoxRect.sizeDelta = Vector2.zero;
         questionBoxRect.anchoredPosition = Vector2.zero;
-        questionBoxRect.offsetMin = new Vector2(10, 10);
-        questionBoxRect.offsetMax = new Vector2(-5, -10);
+        // Margin đều bên trong vùng anchor
+        questionBoxRect.offsetMin = new Vector2(20, 20);
+        questionBoxRect.offsetMax = new Vector2(-20, -20);
 
-        // Viền đen pixel cho box câu hỏi
-        CreatePixelBorder(questionBoxObj.transform, 3);
+        // Không tạo viền đen cho QuestionBox để tránh khung đen xung quanh background
+
+        // Header nhỏ: "READING" (nằm phía trên khung gỗ)
+        GameObject headerObj = new GameObject("Header");
+        headerObj.transform.SetParent(questionBoxObj.transform, false);
+        Text headerText = headerObj.AddComponent<Text>();
+        headerText.text = "HÃY ĐỌC VÀ TRẢ LỜI CÂU HỎI DƯỚI ĐÂY";
+        headerText.font = pixelFont;
+        headerText.fontSize = 24;
+        headerText.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+        headerText.alignment = TextAnchor.UpperLeft;
+        headerText.raycastTarget = false;
+
+        RectTransform headerRect = headerObj.GetComponent<RectTransform>();
+        headerRect.anchorMin = new Vector2(0f, 1f);
+        headerRect.anchorMax = new Vector2(1f, 1.1f);
+        headerRect.sizeDelta = Vector2.zero;
+        headerRect.anchoredPosition = Vector2.zero;
+        headerRect.offsetMin = new Vector2(16, 8);
+        headerRect.offsetMax = new Vector2(-16, -4);
 
         // Text câu hỏi
         GameObject questionObj = new GameObject("QuestionText");
@@ -120,84 +152,98 @@ public class QuestionUI : MonoBehaviour
         questionText = questionObj.AddComponent<Text>();
         questionText.text = "Câu hỏi";
         questionText.font = pixelFont;
+        // Giảm size một chút để vừa khung gỗ
         questionText.fontSize = 32;
-        questionText.color = Color.black; // Màu đen
-        questionText.alignment = TextAnchor.UpperLeft;
+        questionText.color = Color.black;
+        // Căn giữa để text nằm trong lòng khung
+        questionText.alignment = TextAnchor.MiddleCenter;
         questionText.raycastTarget = false;
 
         RectTransform questionRect = questionObj.GetComponent<RectTransform>();
-        questionRect.anchorMin = new Vector2(0, 0);
-        questionRect.anchorMax = new Vector2(1, 1);
+        // Chiếm gần hết phần trong của background, chừa viền gỗ xung quanh
+        questionRect.anchorMin = new Vector2(0.08f, 0.2f);
+        questionRect.anchorMax = new Vector2(0.92f, 0.8f);
         questionRect.sizeDelta = Vector2.zero;
         questionRect.anchoredPosition = Vector2.zero;
-        questionRect.offsetMin = new Vector2(15, 15);
-        questionRect.offsetMax = new Vector2(-15, -15);
+        questionRect.offsetMin = Vector2.zero;
+        questionRect.offsetMax = Vector2.zero;
 
-        // === BOX ĐÁP ÁN BÊN PHẢI (nền trắng, viền đen pixel) ===
+        // === BOX ĐÁP ÁN BÊN PHẢI ===
         GameObject answerBoxObj = new GameObject("AnswerBox");
         answerBoxObj.transform.SetParent(panelObj.transform, false);
-        
+
         Image answerBoxImage = answerBoxObj.AddComponent<Image>();
-        answerBoxImage.color = Color.white; // Nền trắng
-        
+        // Load sprite background riêng cho phần đáp án
+        Sprite bgSpriteAnswer = Resources.Load<Sprite>("UI/backgroundanswer");
+        if (bgSpriteAnswer != null)
+        {
+            answerBoxImage.sprite = bgSpriteAnswer;
+            answerBoxImage.type = Image.Type.Sliced; // Dùng Sliced để giữ tỷ lệ khi scale
+            answerBoxImage.color = Color.white; // Màu trắng để sprite hiển thị đúng
+        }
+        else
+        {
+            // Nếu không tìm thấy sprite, giữ trong suốt
+            answerBoxImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
         RectTransform answerBoxRect = answerBoxObj.GetComponent<RectTransform>();
-        answerBoxRect.anchorMin = new Vector2(0.5f, 0);
-        answerBoxRect.anchorMax = new Vector2(1, 0.4f); // Chiếm phần dưới bên phải
+        // Đặt đối xứng với QuestionBox bên phải, giữ một khoảng hở rất nhỏ để không chồng lên
+        answerBoxRect.anchorMin = new Vector2(0.505f, 0.02f);
+        answerBoxRect.anchorMax = new Vector2(0.97f, 0.42f);
         answerBoxRect.sizeDelta = Vector2.zero;
         answerBoxRect.anchoredPosition = Vector2.zero;
-        answerBoxRect.offsetMin = new Vector2(5, 10);
-        answerBoxRect.offsetMax = new Vector2(-10, -10);
+        answerBoxRect.offsetMin = new Vector2(20, 20);
+        answerBoxRect.offsetMax = new Vector2(-20, -20);
 
-        // Viền đen pixel cho box đáp án
         CreatePixelBorder(answerBoxObj.transform, 3);
 
-        // Tạo buttons cho các lựa chọn (2x2 grid)
+        // Buttons đáp án (2x2)
         optionButtons = new Button[4];
         optionTexts = new Text[4];
         string[] labels = { "A", "B", "C", "D" };
-        
-        // Vị trí cho 2x2 grid (chiếm toàn bộ box đáp án)
+
         Vector2[] anchorMins = new Vector2[]
         {
-            new Vector2(0.05f, 0.52f), // Top-left (A)
-            new Vector2(0.52f, 0.52f), // Top-right (B)
-            new Vector2(0.05f, 0.05f),  // Bottom-left (C)
-            new Vector2(0.52f, 0.05f)  // Bottom-right (D)
+            new Vector2(0.05f, 0.55f), // A: trên/trái
+            new Vector2(0.55f, 0.55f), // B: trên/phải
+            new Vector2(0.05f, 0.05f), // C: dưới/trái
+            new Vector2(0.55f, 0.05f)  // D: dưới/phải
         };
-        
+
         Vector2[] anchorMaxs = new Vector2[]
         {
-            new Vector2(0.48f, 0.95f), // Top-left (A)
-            new Vector2(0.95f, 0.95f), // Top-right (B)
-            new Vector2(0.48f, 0.48f),  // Bottom-left (C)
-            new Vector2(0.95f, 0.48f)  // Bottom-right (D)
+            new Vector2(0.48f, 0.95f),
+            new Vector2(0.95f, 0.95f),
+            new Vector2(0.48f, 0.45f),
+            new Vector2(0.95f, 0.45f)
         };
 
         for (int i = 0; i < 4; i++)
         {
-            // Button
             GameObject btnObj = new GameObject($"OptionButton{labels[i]}");
             btnObj.transform.SetParent(answerBoxObj.transform, false);
-            
+
             Image btnImage = btnObj.AddComponent<Image>();
-            btnImage.color = Color.white; // Nền trắng
+            // Xóa nền trắng của button (giữ lại viền pixel)
+            btnImage.color = new Color(1f, 1f, 1f, 0f);
             btnImage.raycastTarget = true;
-            
+
             Button btn = btnObj.AddComponent<Button>();
             btn.interactable = true;
-            
-            // Setup button colors
+
             ColorBlock colors = btn.colors;
-            colors.normalColor = Color.white;
-            colors.highlightedColor = new Color(0.95f, 0.95f, 0.95f, 1f);
-            colors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
-            colors.selectedColor = new Color(0.95f, 0.95f, 0.95f, 1f);
-            colors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.5f);
+            // Giữ phản hồi tương tác bằng cách đổi alpha nhẹ khi hover/press
+            colors.normalColor = new Color(1f, 1f, 1f, 0f);
+            colors.highlightedColor = new Color(1f, 1f, 1f, 0.12f);
+            colors.pressedColor = new Color(1f, 1f, 1f, 0.2f);
+            colors.selectedColor = new Color(1f, 1f, 1f, 0.12f);
+            colors.disabledColor = new Color(1f, 1f, 1f, 0.05f);
             btn.colors = colors;
-            
-            // Viền đen pixel cho button
-            CreatePixelBorder(btnObj.transform, 2);
-            
+
+            // Xóa viền pixel của button đáp án
+            // CreatePixelBorder(btnObj.transform, 2);
+
             optionButtons[i] = btn;
 
             RectTransform btnRect = btnObj.GetComponent<RectTransform>();
@@ -205,17 +251,18 @@ public class QuestionUI : MonoBehaviour
             btnRect.anchorMax = anchorMaxs[i];
             btnRect.sizeDelta = Vector2.zero;
             btnRect.anchoredPosition = Vector2.zero;
-            btnRect.offsetMin = new Vector2(5, 5);
-            btnRect.offsetMax = new Vector2(-5, -5);
+            btnRect.offsetMin = new Vector2(6, 4);
+            btnRect.offsetMax = new Vector2(-6, -4);
 
-            // Text trong button
+            // Text trong button: hiển thị nội dung đáp án, label A/B/C/D sẽ gắn khi ShowQuestion
             GameObject textObj = new GameObject("Text");
             textObj.transform.SetParent(btnObj.transform, false);
             Text text = textObj.AddComponent<Text>();
             text.text = "";
             text.font = pixelFont;
-            text.fontSize = 28;
+            text.fontSize = 32;
             text.color = Color.black;
+            // Căn giữa text đáp án trong khung
             text.alignment = TextAnchor.MiddleCenter;
             text.raycastTarget = false;
 
@@ -224,12 +271,12 @@ public class QuestionUI : MonoBehaviour
             textRect.anchorMax = Vector2.one;
             textRect.sizeDelta = Vector2.zero;
             textRect.anchoredPosition = Vector2.zero;
-            textRect.offsetMin = new Vector2(5, 5);
-            textRect.offsetMax = new Vector2(-5, -5);
+            // Đưa text vào bên trong khung với padding đều
+            textRect.offsetMin = new Vector2(12, 8);
+            textRect.offsetMax = new Vector2(-12, -8);
 
             optionTexts[i] = text;
 
-            // Gán sự kiện click
             int index = i;
             btn.onClick.AddListener(() => OnOptionSelected(index));
         }

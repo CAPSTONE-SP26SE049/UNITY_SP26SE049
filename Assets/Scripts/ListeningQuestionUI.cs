@@ -89,7 +89,7 @@ public class ListeningQuestionUI : MonoBehaviour
 
     private void CreateListeningUI(Transform parent)
     {
-        // Tạo panel chính
+        // PANEL chính
         GameObject panelObj = new GameObject("ListeningQuestionPanel");
         panelObj.transform.SetParent(parent, false);
         questionPanel = panelObj;
@@ -106,19 +106,49 @@ public class ListeningQuestionUI : MonoBehaviour
         // === BOX CÂU HỎI BÊN TRÁI ===
         GameObject questionBoxObj = new GameObject("QuestionBox");
         questionBoxObj.transform.SetParent(panelObj.transform, false);
-        
+
         Image questionBoxImage = questionBoxObj.AddComponent<Image>();
-        questionBoxImage.color = Color.white;
-        
+        // Dùng background giống QuestionUI
+        Sprite bgQuestion = Resources.Load<Sprite>("UI/backgroundquestion");
+        if (bgQuestion != null)
+        {
+            questionBoxImage.sprite = bgQuestion;
+            questionBoxImage.type = Image.Type.Sliced;
+            questionBoxImage.color = Color.white;
+        }
+        else
+        {
+            questionBoxImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
         RectTransform questionBoxRect = questionBoxObj.GetComponent<RectTransform>();
-        questionBoxRect.anchorMin = new Vector2(0, 0);
-        questionBoxRect.anchorMax = new Vector2(0.5f, 0.4f);
+        questionBoxRect.anchorMin = new Vector2(0f, 0f);
+        questionBoxRect.anchorMax = new Vector2(0.5f, 0.35f);
         questionBoxRect.sizeDelta = Vector2.zero;
         questionBoxRect.anchoredPosition = Vector2.zero;
-        questionBoxRect.offsetMin = new Vector2(10, 10);
-        questionBoxRect.offsetMax = new Vector2(-5, -10);
+        questionBoxRect.offsetMin = new Vector2(12, 12);
+        questionBoxRect.offsetMax = new Vector2(-6, -12);
 
-        CreatePixelBorder(questionBoxObj.transform, 3);
+        // Không tạo viền pixel đen quanh khung nữa
+
+        // Header nhỏ
+        GameObject headerObj = new GameObject("Header");
+        headerObj.transform.SetParent(questionBoxObj.transform, false);
+        Text headerText = headerObj.AddComponent<Text>();
+        headerText.text = "HÃY NGHE VÀ CHỌN ĐÁP ÁN ĐÚNG";
+        headerText.font = pixelFont;
+        headerText.fontSize = 24;
+        headerText.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+        headerText.alignment = TextAnchor.UpperLeft;
+        headerText.raycastTarget = false;
+
+        RectTransform headerRect = headerObj.GetComponent<RectTransform>();
+        headerRect.anchorMin = new Vector2(0f, 0.75f);
+        headerRect.anchorMax = new Vector2(1f, 1f);
+        headerRect.sizeDelta = Vector2.zero;
+        headerRect.anchoredPosition = Vector2.zero;
+        headerRect.offsetMin = new Vector2(16, 8);
+        headerRect.offsetMax = new Vector2(-16, -4);
 
         // Text câu hỏi
         GameObject questionObj = new GameObject("QuestionText");
@@ -126,41 +156,45 @@ public class ListeningQuestionUI : MonoBehaviour
         questionText = questionObj.AddComponent<Text>();
         questionText.text = "Nghe câu hỏi";
         questionText.font = pixelFont;
+        // Đồng bộ style với QuestionUI
         questionText.fontSize = 32;
         questionText.color = Color.black;
-        questionText.alignment = TextAnchor.UpperLeft;
+        // Căn giữa trong khung gỗ
+        questionText.alignment = TextAnchor.MiddleCenter;
         questionText.raycastTarget = false;
 
         RectTransform questionRect = questionObj.GetComponent<RectTransform>();
-        questionRect.anchorMin = new Vector2(0, 0.3f);
-        questionRect.anchorMax = new Vector2(1, 1);
+        // Chiếm gần hết phần trong của background, chừa viền gỗ xung quanh
+        questionRect.anchorMin = new Vector2(0.08f, 0.2f);
+        questionRect.anchorMax = new Vector2(0.92f, 0.8f);
         questionRect.sizeDelta = Vector2.zero;
         questionRect.anchoredPosition = Vector2.zero;
-        questionRect.offsetMin = new Vector2(15, 15);
-        questionRect.offsetMax = new Vector2(-15, -15);
+        questionRect.offsetMin = Vector2.zero;
+        questionRect.offsetMax = Vector2.zero;
 
         // Nút Play Audio
         GameObject playBtnObj = new GameObject("PlayButton");
         playBtnObj.transform.SetParent(questionBoxObj.transform, false);
-        
+
         Image playBtnImage = playBtnObj.AddComponent<Image>();
-        playBtnImage.color = Color.white;
+        // Xóa nền trắng nút Play, chỉ để border trong background gỗ
+        playBtnImage.color = new Color(1f, 1f, 1f, 0f);
         playBtnImage.raycastTarget = true;
-        
+
         playButton = playBtnObj.AddComponent<Button>();
         playButton.interactable = true;
-        
+
         ColorBlock playColors = playButton.colors;
-        playColors.normalColor = Color.white;
-        playColors.highlightedColor = new Color(0.95f, 0.95f, 0.95f, 1f);
-        playColors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
+        playColors.normalColor = new Color(1f, 1f, 1f, 0f);
+        playColors.highlightedColor = new Color(1f, 1f, 1f, 0.12f);
+        playColors.pressedColor = new Color(1f, 1f, 1f, 0.2f);
         playButton.colors = playColors;
-        
+
         CreatePixelBorder(playBtnObj.transform, 2);
 
         RectTransform playBtnRect = playBtnObj.GetComponent<RectTransform>();
-        playBtnRect.anchorMin = new Vector2(0.1f, 0.05f);
-        playBtnRect.anchorMax = new Vector2(0.9f, 0.25f);
+        playBtnRect.anchorMin = new Vector2(0.15f, 0.05f);
+        playBtnRect.anchorMax = new Vector2(0.85f, 0.32f);
         playBtnRect.sizeDelta = Vector2.zero;
         playBtnRect.anchoredPosition = Vector2.zero;
 
@@ -169,7 +203,7 @@ public class ListeningQuestionUI : MonoBehaviour
         playButtonText = playTextObj.AddComponent<Text>();
         playButtonText.text = "🔊 Nghe";
         playButtonText.font = pixelFont;
-        playButtonText.fontSize = 28;
+        playButtonText.fontSize = 32;
         playButtonText.color = Color.black;
         playButtonText.alignment = TextAnchor.MiddleCenter;
         playButtonText.raycastTarget = false;
@@ -185,64 +219,75 @@ public class ListeningQuestionUI : MonoBehaviour
         // === BOX ĐÁP ÁN BÊN PHẢI ===
         GameObject answerBoxObj = new GameObject("AnswerBox");
         answerBoxObj.transform.SetParent(panelObj.transform, false);
-        
+
         Image answerBoxImage = answerBoxObj.AddComponent<Image>();
-        answerBoxImage.color = Color.white;
-        
+        // Dùng background giống AnswerBox trong QuestionUI
+        Sprite bgAnswer = Resources.Load<Sprite>("UI/backgroundanswer");
+        if (bgAnswer != null)
+        {
+            answerBoxImage.sprite = bgAnswer;
+            answerBoxImage.type = Image.Type.Sliced;
+            answerBoxImage.color = Color.white;
+        }
+        else
+        {
+            answerBoxImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
         RectTransform answerBoxRect = answerBoxObj.GetComponent<RectTransform>();
-        answerBoxRect.anchorMin = new Vector2(0.5f, 0);
-        answerBoxRect.anchorMax = new Vector2(1, 0.4f);
+        answerBoxRect.anchorMin = new Vector2(0.5f, 0f);
+        answerBoxRect.anchorMax = new Vector2(1f, 0.35f);
         answerBoxRect.sizeDelta = Vector2.zero;
         answerBoxRect.anchoredPosition = Vector2.zero;
-        answerBoxRect.offsetMin = new Vector2(5, 10);
-        answerBoxRect.offsetMax = new Vector2(-10, -10);
+        answerBoxRect.offsetMin = new Vector2(6, 12);
+        answerBoxRect.offsetMax = new Vector2(-12, -12);
 
-        CreatePixelBorder(answerBoxObj.transform, 3);
+        // Không tạo viền pixel đen cho AnswerBox nữa
 
-        // Tạo buttons cho các lựa chọn (2x2 grid)
+        // Buttons đáp án
         optionButtons = new Button[4];
         optionTexts = new Text[4];
         string[] labels = { "A", "B", "C", "D" };
-        
+
         Vector2[] anchorMins = new Vector2[]
         {
-            new Vector2(0.05f, 0.52f), // Top-left (A)
-            new Vector2(0.52f, 0.52f), // Top-right (B)
-            new Vector2(0.05f, 0.05f),  // Bottom-left (C)
-            new Vector2(0.52f, 0.05f)  // Bottom-right (D)
+            new Vector2(0.05f, 0.55f),
+            new Vector2(0.55f, 0.55f),
+            new Vector2(0.05f, 0.05f),
+            new Vector2(0.55f, 0.05f)
         };
-        
+
         Vector2[] anchorMaxs = new Vector2[]
         {
-            new Vector2(0.48f, 0.95f), // Top-left (A)
-            new Vector2(0.95f, 0.95f), // Top-right (B)
-            new Vector2(0.48f, 0.48f),  // Bottom-left (C)
-            new Vector2(0.95f, 0.48f)  // Bottom-right (D)
+            new Vector2(0.48f, 0.95f),
+            new Vector2(0.95f, 0.95f),
+            new Vector2(0.48f, 0.45f),
+            new Vector2(0.95f, 0.45f)
         };
 
         for (int i = 0; i < 4; i++)
         {
-            // Button
             GameObject btnObj = new GameObject($"OptionButton{labels[i]}");
             btnObj.transform.SetParent(answerBoxObj.transform, false);
-            
+
             Image btnImage = btnObj.AddComponent<Image>();
-            btnImage.color = Color.white;
+            // Xóa nền trắng của button, dùng nền trong suốt
+            btnImage.color = new Color(1f, 1f, 1f, 0f);
             btnImage.raycastTarget = true;
-            
+
             Button btn = btnObj.AddComponent<Button>();
             btn.interactable = true;
-            
+
             ColorBlock colors = btn.colors;
-            colors.normalColor = Color.white;
-            colors.highlightedColor = new Color(0.95f, 0.95f, 0.95f, 1f);
-            colors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
-            colors.selectedColor = new Color(0.95f, 0.95f, 0.95f, 1f);
-            colors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.5f);
+            colors.normalColor = new Color(1f, 1f, 1f, 0f);
+            colors.highlightedColor = new Color(1f, 1f, 1f, 0.12f);
+            colors.pressedColor = new Color(1f, 1f, 1f, 0.2f);
+            colors.selectedColor = new Color(1f, 1f, 1f, 0.12f);
+            colors.disabledColor = new Color(1f, 1f, 1f, 0.05f);
             btn.colors = colors;
-            
-            CreatePixelBorder(btnObj.transform, 2);
-            
+
+            // Không cần viền pixel đen quanh từng button
+
             optionButtons[i] = btn;
 
             RectTransform btnRect = btnObj.GetComponent<RectTransform>();
@@ -250,17 +295,17 @@ public class ListeningQuestionUI : MonoBehaviour
             btnRect.anchorMax = anchorMaxs[i];
             btnRect.sizeDelta = Vector2.zero;
             btnRect.anchoredPosition = Vector2.zero;
-            btnRect.offsetMin = new Vector2(5, 5);
-            btnRect.offsetMax = new Vector2(-5, -5);
+            btnRect.offsetMin = new Vector2(6, 4);
+            btnRect.offsetMax = new Vector2(-6, -4);
 
-            // Text trong button
             GameObject textObj = new GameObject("Text");
             textObj.transform.SetParent(btnObj.transform, false);
             Text text = textObj.AddComponent<Text>();
             text.text = "";
             text.font = pixelFont;
-            text.fontSize = 28;
+            text.fontSize = 32;
             text.color = Color.black;
+            // Căn giữa text đáp án trong khung
             text.alignment = TextAnchor.MiddleCenter;
             text.raycastTarget = false;
 
@@ -269,12 +314,12 @@ public class ListeningQuestionUI : MonoBehaviour
             textRect.anchorMax = Vector2.one;
             textRect.sizeDelta = Vector2.zero;
             textRect.anchoredPosition = Vector2.zero;
-            textRect.offsetMin = new Vector2(5, 5);
-            textRect.offsetMax = new Vector2(-5, -5);
+            // Đưa text vào bên trong khung với padding đều
+            textRect.offsetMin = new Vector2(12, 8);
+            textRect.offsetMax = new Vector2(-12, -8);
 
             optionTexts[i] = text;
 
-            // Gán sự kiện click
             int index = i;
             btn.onClick.AddListener(() => OnOptionSelected(index));
         }
