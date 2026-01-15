@@ -286,7 +286,8 @@ public class ListeningQuestionUI : MonoBehaviour
             colors.disabledColor = new Color(1f, 1f, 1f, 0.05f);
             btn.colors = colors;
 
-            // Không cần viền pixel đen quanh từng button
+            // Giữ lại viền pixel cho từng button A, B, C, D
+            CreatePixelBorder(btnObj.transform, 2);
 
             optionButtons[i] = btn;
 

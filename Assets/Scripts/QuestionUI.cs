@@ -196,7 +196,8 @@ public class QuestionUI : MonoBehaviour
         answerBoxRect.offsetMin = new Vector2(20, 20);
         answerBoxRect.offsetMax = new Vector2(-20, -20);
 
-        CreatePixelBorder(answerBoxObj.transform, 3);
+        // Xóa viền ngoài của AnswerBox, chỉ giữ viền của từng button A, B, C, D
+        // CreatePixelBorder(answerBoxObj.transform, 3);
 
         // Buttons đáp án (2x2)
         optionButtons = new Button[4];
@@ -241,8 +242,8 @@ public class QuestionUI : MonoBehaviour
             colors.disabledColor = new Color(1f, 1f, 1f, 0.05f);
             btn.colors = colors;
 
-            // Xóa viền pixel của button đáp án
-            // CreatePixelBorder(btnObj.transform, 2);
+            // Giữ lại viền pixel cho từng button A, B, C, D
+            CreatePixelBorder(btnObj.transform, 2);
 
             optionButtons[i] = btn;
 
