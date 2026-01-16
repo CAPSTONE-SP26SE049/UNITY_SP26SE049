@@ -115,10 +115,47 @@ public class ConGa : MonoBehaviour
         {
             if (mainChar.starpower) {
                 Hit();
-            } else if (collision.transform.DotTest(transform, Vector2.down)) {
-                Flatten();
-            } else {
-                mainChar.Hit();
+            } 
+            else
+            {
+                // Kiểm tra MainCharMovement để lấy thông tin về trạng thái
+                MainCharMovement movement = mainChar.GetComponent<MainCharMovement>();
+                if (movement == null)
+                {
+                    // Không có movement component → MainChar chết
+                    mainChar.Hit();
+                    return;
+                }
+
+                // Kiểm tra collision normal: MainChar phải chạm vào từ PHÍA TRÊN
+                // Normal vector hướng lên trên (Y > 0.5) nghĩa là MainChar chạm vào từ trên xuống
+                ContactPoint2D contact = collision.contacts[0];
+                Vector2 normal = contact.normal;
+                bool hitFromAbove = normal.y > 0.5f;
+                
+                // Kiểm tra vị trí Y: MainChar phải cao hơn con gà
+                float yDifference = collision.transform.position.y - transform.position.y;
+                bool mainCharAbove = yDifference > 0.1f;
+                
+                // Kiểm tra MainChar có đang RƠI XUỐNG không (falling = true)
+                // VÀ không đang nhảy lên (velocity.y <= 0)
+                bool isFalling = movement.falling;
+                
+                // Chỉ khi MainChar:
+                // 1. Chạm vào từ PHÍA TRÊN (normal.y > 0.5)
+                // 2. Ở phía trên con gà (Y cao hơn)
+                // 3. Đang RƠI XUỐNG (falling = true)
+                // → Con gà mới chết
+                if (hitFromAbove && mainCharAbove && isFalling)
+                {
+                    // MainChar nhảy lên đầu con gà → con gà chết
+                    Flatten();
+                }
+                else
+                {
+                    // MainChar đụng từ bên cạnh/dưới → MainChar chết
+                    mainChar.Hit();
+                }
             }
         }
     }

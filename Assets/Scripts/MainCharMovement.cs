@@ -193,10 +193,12 @@ public class MainCharMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // Chỉ xử lý bounce khi nhảy lên đầu enemy
+        // Logic chết của MainChar/con gà sẽ được xử lý trong ConGa.OnCollisionEnter2D
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            // Bounce off enemy head
-            if (transform.DotTest(collision.transform, Vector2.down))
+            // Bounce off enemy head - chỉ khi MainChar đang rơi xuống và ở phía trên enemy
+            if (transform.DotTest(collision.transform, Vector2.down) && velocity.y <= 0f)
             {
                 velocity.y = jumpForce / 2f;
                 jumping = true;
