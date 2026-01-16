@@ -11,6 +11,9 @@ public class Player : MonoBehaviour
     public PlayerSpriteRenderer bigRenderer;
     private PlayerSpriteRenderer activeRenderer;
 
+    [Header("Health System")]
+    public HealthManager healthManager;
+
     public bool big => bigRenderer.enabled;
     public bool dead => deathAnimation.enabled;
     public bool starpower { get; private set; }
@@ -21,16 +24,45 @@ public class Player : MonoBehaviour
         movement = GetComponent<PlayerMovement>();
         deathAnimation = GetComponent<DeathAnimation>();
         activeRenderer = smallRenderer;
+
+        // Setup health manager if not assigned
+        if (healthManager == null)
+        {
+            healthManager = GetComponent<HealthManager>();
+            if (healthManager == null)
+            {
+                healthManager = gameObject.AddComponent<HealthManager>();
+                healthManager.maxHealth = 100;
+            }
+        }
     }
 
     public void Hit()
     {
         if (!dead && !starpower)
         {
-            if (big) {
-                Shrink();
-            } else {
-                Death();
+            // Use health system instead of big/small system
+            if (healthManager != null)
+            {
+                healthManager.TakeDamage(10); // Take 10 damage per hit
+                
+                if (healthManager.CurrentHealth <= 0)
+                {
+                    Death();
+                }
+                else if (big)
+                {
+                    Shrink();
+                }
+            }
+            else
+            {
+                // Fallback to old system
+                if (big) {
+                    Shrink();
+                } else {
+                    Death();
+                }
             }
         }
     }

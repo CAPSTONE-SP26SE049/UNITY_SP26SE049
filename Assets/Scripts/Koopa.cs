@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(50)] // Chạy sau QuestionObstacle
 public class Koopa : MonoBehaviour
 {
     public Sprite shellSprite;
@@ -12,6 +13,14 @@ public class Koopa : MonoBehaviour
     {
         if (!shelled && collision.gameObject.CompareTag("Player") && collision.gameObject.TryGetComponent(out Player player))
         {
+            // Kiểm tra xem có bất kỳ obstacle câu hỏi nào không - nếu có thì không gây damage
+            if (GetComponent<QuestionObstacle>() != null ||
+                GetComponent<WritingQuestionObstacle>() != null ||
+                GetComponent<ListeningQuestionObstacle>() != null)
+            {
+                return; // Đây là enemy dùng cho câu hỏi, không xử lý damage
+            }
+
             if (player.starpower) {
                 Hit();
             } else if (collision.transform.DotTest(transform, Vector2.down)) {
@@ -26,6 +35,14 @@ public class Koopa : MonoBehaviour
     {
         if (shelled && other.CompareTag("Player") && other.TryGetComponent(out Player player))
         {
+            // Kiểm tra xem có obstacle câu hỏi không - nếu có thì không gây damage
+            if (GetComponent<QuestionObstacle>() != null ||
+                GetComponent<WritingQuestionObstacle>() != null ||
+                GetComponent<ListeningQuestionObstacle>() != null)
+            {
+                return;
+            }
+
             if (!pushed)
             {
                 Vector2 direction = new(transform.position.x - other.transform.position.x, 0f);
