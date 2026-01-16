@@ -33,7 +33,7 @@ public static class FontHelper
         // Nếu vẫn không tìm thấy, dùng font mặc định
         if (_vt323Font == null)
         {
-            _vt323Font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            _vt323Font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         }
         
         return _vt323Font;

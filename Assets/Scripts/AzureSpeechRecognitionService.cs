@@ -105,7 +105,7 @@ public class AzureSpeechRecognitionService : MonoBehaviour
         isTokenValid = false;
         string tokenUrl = string.Format(TOKEN_ENDPOINT, region);
 
-        using (UnityWebRequest request = UnityWebRequest.Post(tokenUrl, ""))
+        using (UnityWebRequest request = UnityWebRequest.PostWwwForm(tokenUrl, ""))
         {
             request.SetRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
             request.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");

@@ -71,7 +71,6 @@ public class Doc : MonoBehaviour
     {
         // Đảo ngược logic flip cho Doc (vì sprite Doc hướng về bên phải mặc định)
         // Chạy sau FixedUpdate() của EntityMovement để override transform rotation
-        // EntityMovement sẽ tự động quay đầu khi đụng vật cản (trong FixedUpdate)
         if (entityMovement != null)
         {
             // Nếu EntityMovement set quay 180 độ (đi sang phải), ta không quay (để sprite hướng phải)
@@ -168,21 +167,6 @@ public class Doc : MonoBehaviour
                 Physics2D.IgnoreCollision(thisCollider, otherCollider, true);
             }
             return; // Không xử lý collision với enemy khác
-        }
-
-        // Quay đầu khi đụng vật cản (wall, block, etc.) - giống ConGa
-        // Kiểm tra xem có phải vật cản không (không phải Player)
-        if (!collision.gameObject.CompareTag("Player"))
-        {
-            // Kiểm tra collision normal để xác định hướng va chạm
-            ContactPoint2D contact = collision.contacts[0];
-            Vector2 normal = contact.normal;
-            
-            // Nếu đụng từ bên trái hoặc bên phải (normal.x != 0), quay đầu
-            if (Mathf.Abs(normal.x) > 0.5f && entityMovement != null)
-            {
-                entityMovement.direction = -entityMovement.direction;
-            }
         }
 
         // Kiểm tra Player (Mario)
